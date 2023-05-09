@@ -1,0 +1,95 @@
+#
+#允许指定IP访问 修改 PowerMta  http-access 10.1.0.10 admin,如果允许任何IP访问 就把10.1.0.10改成0/0 
+#
+http-access 0/0 admin
+# PowerMta web管理后台所使用的端口，默认8080 ，我们改成59527
+http-mgmt-port 59527
+#本服务 PowerMta 使用的域名
+host-name jinyundun.com
+#退信退到指定的邮箱，可以是其他域名邮箱来接收，但是为了减少被识别成垃圾邮件的风险，使用当前域名后坠的邮箱，
+#这里我不确定，比如发送到gmail.com到低是在gmail哪边处理的还是在本机处理，如果是本地处理，可以所有的pmta服务器都使用同一个邮箱来接收，以方便管理
+postmaster abuse@jinyundun.com
+#星星或者MailWizz等发送端连接的端口
+smtp-port 2525
+#DKMI,为了方便管理，我们所有的pmta通一使用一个固定的签名，签名文件放在/etc/pmta/key.pem
+domain-key	key,*,/etc/pmta/key.pem
+#<smtp-user 用户名>
+#    password "密码"
+#</smtp-user>
+<smtp-user smtp>
+    password "kakakaka"
+    source {auth1}
+</smtp-user>
+<source {auth1}>
+  allow-mailmerge yes
+  always-allow-relaying yes  # allow feeding for {auth1}
+ # process-x-virtual-mta yes  # allow selection of a VirtualMTA
+  max-message-size 0         # 0 implies no cap, in bytes
+  smtp-service yes           # allow SMTP service
+  require-auth true
+  #default-virtual-mta by-smtp-source-ip
+	#default-virtual-mta pond  # selects a VirtualMTA/pool by source of the message
+</source>
+
+
+#
+# Settings per outgoing domain
+#
+#<domain discard.port25.com>
+#    max-smtp-out    800
+#    route           [192.168.0.1]:2525  # bypasses DNS resolution
+#</domain>
+#
+#<domain test.port25.com>
+#    max-smtp-out    1
+#    log-connections yes
+#    log-commands    yes     # WARNING: verbose!
+#    log-resolution  no      # WARNING: verbose!
+#    log-data        no      # WARNING: even more verbose!
+#</domain>
+
+#<domain {sparkpost}>
+#    auth-username Your_API_key_goes_here    # generate under Account/API Keys
+#</domain>
+
+<domain *>
+    max-smtp-out    20       # max. connections *per domain*
+    bounce-after    4d12h    # 4 days, 12 hours
+    retry-after     10m      # 10 minutes
+</domain>
+
+
+#
+# IP addresses allowed to access the HTTP management interface, one
+# per line
+#
+
+
+#
+# Whether to run the PowerMTA deamon as root
+#
+run-as-root no
+
+#
+# Logging file name
+#
+log-file /var/log/pmta/pmta.log   # logrotate is used for rotation
+
+#
+# Accounting file(s)
+#
+<acct-file /var/log/pmta/acct.csv>
+#    move-to /opt/myapp/pmta-acct   # configure as fit for your application
+    move-interval 5m
+    max-size 50M
+    delete-after 8d
+</acct-file>
+
+#
+# Spool directories
+#
+<spool /var/spool/pmta>
+    deliver-only no
+</spool>
+
+# EOF
