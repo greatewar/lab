@@ -20,7 +20,7 @@ fi
 
 # 下载 pmtaBounce 文件到 /opt/pmta/ 目录
 echo "开始下载pmtaBounce..."
-wget -O /opt/pmta/pmtaBounce https://raw.githubusercontent.com/greatewar/lab/main/edm/pmta/pmtaBounce
+wget -O /opt/pmta/pmtaBounce https://raw.githubusercontent.com/greatewar/lab/main/edm/pmta/pmtaBounce/pmtaBounce
 
 # 设置文件权限为 777
 chmod 777 /opt/pmta/pmtaBounce
